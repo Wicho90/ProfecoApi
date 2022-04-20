@@ -21,12 +21,17 @@ public class Producto implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	
+	@Column(nullable=false)
 	private String nombre;
+	
+	@Column(nullable=false)
 	private String mercado;
+	
+	@Column(nullable=false)
 	private double precio;
-
-	@Column(name = "id_mercado")
+	
+	
+	@Column(name = "id_mercado",nullable=false)
 	private Long idMercado;
 
 
