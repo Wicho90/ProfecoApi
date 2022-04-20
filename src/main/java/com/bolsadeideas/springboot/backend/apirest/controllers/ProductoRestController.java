@@ -68,7 +68,7 @@ public class ProductoRestController {
 		}
 
 		response.put("mensaje", "El producto ha sido creado con éxito!");
-		response.put("prducto", productoNew);
+		response.put("producto", productoNew);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
@@ -105,7 +105,7 @@ public class ProductoRestController {
 		}
 
 		response.put("mensaje", "El producto ha sido actualizado con éxito!");
-		response.put("prducto", productoUpdate);
+		response.put("producto", productoUpdate);
 
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
