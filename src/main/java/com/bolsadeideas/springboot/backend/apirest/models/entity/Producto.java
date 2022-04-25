@@ -13,6 +13,14 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+
+import javax.validation.constraints.Size;
+
+
+
+
 @Entity
 @Table(name="productos")
 public class Producto implements Serializable{
@@ -21,23 +29,31 @@ public class Producto implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotEmpty
+	@Size(min = 3, max = 25)
 	@Column(nullable=false)
 	private String nombre;
 	
+	@NotEmpty
+	@Size(min = 4, max = 15)
 	@Column(nullable=false)
 	private String mercado;
 	
+	
+	@Positive
 	@Column(nullable=false)
 	private double precio;
 	
-	
+	@Positive
 	@Column(name = "id_mercado",nullable=false)
-	private Long idMercado;
+	private long idMercado;
 
 
 	@Column(name = "create_at")
 	@Temporal(TemporalType.DATE)
 	private Date createAt;
+	
+	private String foto;
 	
 	@PrePersist //anotar fecha antes de la persistencia
 	public void prePersis() {
@@ -77,11 +93,11 @@ public class Producto implements Serializable{
 		this.precio = precio;
 	}
 
-	public Long getIdMercado() {
+	public long getIdMercado() {
 		return idMercado;
 	}
 
-	public void setIdMercado(Long idMercado) {
+	public void setIdMercado(long idMercado) {
 		this.idMercado = idMercado;
 	}
 
@@ -93,6 +109,18 @@ public class Producto implements Serializable{
 		this.createAt = createAt;
 	}
 	
+	
+	
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
+	}
+
+
+
 	/**
 	 * 
 	 */
