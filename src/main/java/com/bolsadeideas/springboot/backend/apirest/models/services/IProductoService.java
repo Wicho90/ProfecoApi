@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.bolsadeideas.springboot.backend.apirest.models.entity.Mercado;
 import com.bolsadeideas.springboot.backend.apirest.models.entity.Producto;
 
 public interface IProductoService {
@@ -21,6 +22,8 @@ public interface IProductoService {
 	
 	
 	public void delete(Long id);
+	
+	public List<Mercado> findAllMercados();
 	
 	
 

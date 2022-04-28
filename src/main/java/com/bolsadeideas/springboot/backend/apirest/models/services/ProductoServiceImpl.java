@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bolsadeideas.springboot.backend.apirest.models.dao.IProductoDao;
+import com.bolsadeideas.springboot.backend.apirest.models.entity.Mercado;
 import com.bolsadeideas.springboot.backend.apirest.models.entity.Producto;
 
 @Service
@@ -43,6 +44,12 @@ public class ProductoServiceImpl implements IProductoService {
 	public void delete(Long id) {
 		productoDao.deleteById(id);
 		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Mercado> findAllMercados() {
+		return productoDao.findAllMercados();
 	}
 
 	

@@ -1,24 +1,20 @@
 package com.bolsadeideas.springboot.backend.apirest.controllers;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,9 +36,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
+import com.bolsadeideas.springboot.backend.apirest.models.entity.Mercado;
 import com.bolsadeideas.springboot.backend.apirest.models.entity.Producto;
 import com.bolsadeideas.springboot.backend.apirest.models.services.IProductoService;
+import com.bolsadeideas.springboot.backend.apirest.models.services.IUploadFileService;
 
 @CrossOrigin // (origins = {"http://localhost:4200"})
 @RestController
@@ -52,7 +49,9 @@ public class ProductoRestController {
 	@Autowired
 	private IProductoService productoService;
 	
-	private final Logger log = LoggerFactory.getLogger(ProductoRestController.class);
+	@Autowired
+	private IUploadFileService uploadService;
+
 
 	@GetMapping("/productos")
 	public List<Producto> index() {
@@ -142,11 +141,10 @@ public class ProductoRestController {
 
 			// agregamos los nuevos datos al cliente en la base de datos
 			productoActual.setNombre(producto.getNombre());
-			productoActual.setMercado(producto.getMercado());
 			productoActual.setPrecio(producto.getPrecio());
-			productoActual.setIdMercado(producto.getIdMercado());
 			productoActual.setCreateAt(producto.getCreateAt());
-
+			productoActual.setMercado(producto.getMercado());
+			
 			productoUpdate = productoService.save(productoActual);
 
 		} catch (DataAccessException e) {
@@ -169,13 +167,7 @@ public class ProductoRestController {
 			Producto producto = productoService.findById(id);
 			String nombreFotoAnterior = producto.getFoto();
 			
-			if(nombreFotoAnterior !=null && nombreFotoAnterior.length() > 0) {
-				Path rutaFotoAnterior = Paths.get("D:\\Curso\\uploads").resolve(nombreFotoAnterior).toAbsolutePath();
-				File archivoFotoAnterior = rutaFotoAnterior.toFile();
-				if(archivoFotoAnterior.exists() && archivoFotoAnterior.canRead()) {
-					archivoFotoAnterior.delete();
-				}
-			}
+			uploadService.eliminar(nombreFotoAnterior);
 			
 			productoService.delete(id);
 		} catch (DataAccessException e) {
@@ -196,27 +188,19 @@ public class ProductoRestController {
 		Producto producto = productoService.findById(id);
 		
 		if(!archivo.isEmpty()) {
-			String nombreArchivo = UUID.randomUUID().toString() + "_" + archivo.getOriginalFilename().replace(" ", "");
-			Path rutaArchivo = Paths.get("D:\\Curso\\uploads").resolve(nombreArchivo).toAbsolutePath();
-			log.info(rutaArchivo.toString());
 			
+			String nombreArchivo = null;
 			try {
-				Files.copy(archivo.getInputStream(), rutaArchivo);
+				nombreArchivo =	uploadService.copiar(archivo);
 			} catch (IOException e) {
-				response.put("mensaje", "Error al subir la imagen del prducto " + nombreArchivo );
+				response.put("mensaje", "Error al subir la imagen del prducto ");
 				response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			
 			String nombreFotoAnterior = producto.getFoto();
 			
-			if(nombreFotoAnterior !=null && nombreFotoAnterior.length() > 0) {
-				Path rutaFotoAnterior = Paths.get("D:\\Curso\\uploads").resolve(nombreFotoAnterior).toAbsolutePath();
-				File archivoFotoAnterior = rutaFotoAnterior.toFile();
-				if(archivoFotoAnterior.exists() && archivoFotoAnterior.canRead()) {
-					archivoFotoAnterior.delete();
-				}
-			}
+			uploadService.eliminar(nombreFotoAnterior);
 			
 			producto.setFoto(nombreArchivo);
 			
@@ -232,24 +216,24 @@ public class ProductoRestController {
 	@GetMapping("uploads/img/{nombreFoto:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto){
 			
-		Path rutaArchivo = Paths.get("D:\\Curso\\uploads").resolve(nombreFoto).toAbsolutePath();
-		log.info(rutaArchivo.toString());
 		Resource recurso = null;
 		
 		try {
-			recurso = new UrlResource(rutaArchivo.toUri());
+			recurso = uploadService.cargar(nombreFoto);
 		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		if(!recurso.exists() && !recurso.isReadable()) {
-			throw new RuntimeException("Error no se pudo cargar la imagen: " + nombreFoto);
 		}
 		
 		HttpHeaders cabecera = new HttpHeaders();
 		cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"" );
 		
 		return new ResponseEntity<Resource>(recurso, cabecera,HttpStatus.OK);
+	}
+	
+	@GetMapping("/productos/mercados")
+	public List<Mercado> listarMercados(){
+		return productoService.findAllMercados();
 	}
 
 }
