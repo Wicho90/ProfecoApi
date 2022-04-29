@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -83,7 +84,8 @@ public class ProductoRestController {
 		}
 		return new ResponseEntity<Producto>(producto, HttpStatus.OK);
 	}
-
+	
+	@Secured("ROLE_ADMIN")
 	@PostMapping("/productos") // Transformar el json de llega al objeto producto
 	public ResponseEntity<?> create(@Valid @RequestBody Producto producto, BindingResult result) {
 		Producto productoNew = null;
@@ -110,7 +112,8 @@ public class ProductoRestController {
 		response.put("producto", productoNew);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
-
+	
+	@Secured("ROLE_ADMIN")
 	@PutMapping("/productos/{id}")
 	public ResponseEntity<?> update(@Valid @RequestBody Producto producto, BindingResult result,
 			@PathVariable Long id) {
@@ -159,7 +162,8 @@ public class ProductoRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
 	}
-
+	
+	@Secured("ROLE_ADMIN")
 	@DeleteMapping("/productos/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		Map<String, Object> response = new HashMap<>();
@@ -181,6 +185,7 @@ public class ProductoRestController {
 
 	}
 	
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@PostMapping("/productos/upload")
 	public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") Long id){
 		Map<String, Object> response = new HashMap<>();
@@ -231,6 +236,7 @@ public class ProductoRestController {
 		return new ResponseEntity<Resource>(recurso, cabecera,HttpStatus.OK);
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/productos/mercados")
 	public List<Mercado> listarMercados(){
 		return productoService.findAllMercados();

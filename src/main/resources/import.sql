@@ -11,3 +11,13 @@ INSERT INTO productos (mercado_id, nombre, precio, create_at, foto) VALUES(1, 'S
 INSERT INTO productos (mercado_id, nombre, precio, create_at, foto) VALUES(2, 'Vick', 18.90, '2020-12-13', 'c862e9ba-5093-457c-8048-d3f16aa3ff07_vick.webp');
 INSERT INTO productos (mercado_id, nombre, precio, create_at, foto) VALUES(5, 'Servitoalla Pétalo', 20.90, '2014-12-13', 'da3e896b-0380-43b3-a72b-0e1229947540_petalo.jpg');
 INSERT INTO productos (mercado_id, nombre, precio, create_at, foto) VALUES(4, 'Maruchan', 14.13, '2005-12-13', '01a996f5-273d-4067-925d-cacdaba735be_maruchan.jpg');
+
+INSERT INTO usuarios (username, password, enabled, nombre, apellido, email) VALUES ('luis','$2a$10$zwP6DD8UftTpJRLSpoakfOKfcz4Or2gpzACpfMRLd4G2.1JyRNqnq', 1, 'Luis', 'Ochoa', 'occhoa90@gmail.com');
+INSERT INTO usuarios (username, password, enabled, nombre, apellido, email) VALUES ('admin','$2a$10$xsBBLdovQVQbdV3XG7GNEetPi6CmFdCSYGKqum6FOd1m1gN20CeKi', 1, 'John', 'Doe', 'john.doe@gmail.com');
+
+INSERT INTO roles (nombre) VALUES ('ROLE_USER');
+INSERT INTO roles (nombre) VALUES ('ROLE_ADMIN');
+
+INSERT INTO usuarios_roles (usuario_id, role_id) VALUES (1,1);
+INSERT INTO usuarios_roles (usuario_id, role_id) VALUES (2,2);
+INSERT INTO usuarios_roles (usuario_id, role_id) VALUES (2,1);
